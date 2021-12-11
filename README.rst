@@ -12,7 +12,7 @@ Installation
 
 To get ``afmcg``, you can install it with pip::
 
-    $ pip install afmcg
+    $ pip install git+https://github.com/dmhuanglab/afmcg@v0.0.1
 
 Algorithm
 ---------
