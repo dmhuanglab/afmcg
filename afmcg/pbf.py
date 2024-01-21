@@ -19,8 +19,8 @@ def grid_centre_nonuniform(var_min,var_max,N):
     N is number of centers
     """
     centre = []
-    for i in range(0,N+1):
-        centre.append(var_max-(var_max-var_min)*cos(i*pi/(2*N))) 
+    for i in range(0,N):
+        centre.append(var_max-(var_max-var_min)*cos(i*pi/(2*(N-1)))) 
     return(centre)
 
 def pbf_meshgrid(center_r):
@@ -43,7 +43,7 @@ def radius_norm_1D(centre,x,grid):
 def cosine_der(k,x):
     """
     x is cos(y)
-    evaluate derivative of cos(ky) wrt x=cos(y)
+    evaluate derivative of cos(ky) wrt x=cos(y) for k = 0,1,2,3,4,...
     """
     if sin(x) == 0 or k==0:
         cos_der = 0
@@ -108,12 +108,12 @@ def periodic_basis_cubic_splines(center_r,k_max,data):
                     pbf.append(cub_spl*gk1*gk2*gk3)
     return pbf
 
-def periodic_basis_force_derivative_cubic_splines(center_r,k_max,data,R_unit,dcosA_dR,dcosB_dR):
+def periodic_basis_force_torque_cubic_splines(center_r,k_max,basis_var,R_unit,dcosA_dR,dcosB_dR,dcosbeta_di3,dcosA_di3,i3_unit):
     """
-    Evaluate periodic basis function (pbf) first erivative wrt CG site-site vectors (pbf_dR), 
+    Evaluate periodic basis function (pbf) first erivative wrt CG site-site vectors (pbf_dR),
     for basis functions for intermolecular forces. Output is a set of basis function calculated
     for each neighbor of a CG site
-    
+
     Parameters:
     pbf_i: 4D array containing important indices to construct basis function
     data: 4D array (r, beta, A, B)
@@ -124,16 +124,15 @@ def periodic_basis_force_derivative_cubic_splines(center_r,k_max,data,R_unit,dco
 
     Returns:
     pbf_dR: 3D vector
+    pbf_di3: 3D vector
     """
-
-    pbf_dR = []
-    r,beta,A,B = data[:]
+    r,beta,A,B = basis_var[:]
+    pbf_dR,pbf_di3 = [], []
 
     # Periodic basis function terms
     for i in range(-2,len(center_r)-2):
         cub_spl_fixed = nat_cubic_spline_basis(r,center_r[-2],center_r)
         cub_spl_fixed_dR = nat_cubic_spline_basis_dR(r,center_r[-2],center_r)*R_unit
-        #print(cub_spl_fixed_dR)
         if i==-2:
             cub_spl = 1
             cub_spl_dR = np.array([0,0,0])
@@ -143,20 +142,23 @@ def periodic_basis_force_derivative_cubic_splines(center_r,k_max,data,R_unit,dco
         else:
             cub_spl = nat_cubic_spline_basis(r,center_r[i],center_r) - cub_spl_fixed
             cub_spl_dR = nat_cubic_spline_basis_dR(r,center_r[i],center_r)*R_unit - cub_spl_fixed_dR
-
         for k1 in range(0,k_max+1,2):
             gk1 = cos(k1*beta)
             dgk1_dR = np.array([0,0,0])
+            dgk1_di3 = cosine_der(k1,beta)*dcosbeta_di3
             for k2 in np.arange(0,k_max+1,2):
                 gk2 = cos(k2*A)
                 dgk2_dR = cosine_der(k2,A)*dcosA_dR
+                dgk2_di3 = cosine_der(k2,A)*dcosA_di3
                 for k3 in np.arange(0,k_max+1,2):
                     gk3 = cos(k3*B)
                     dgk3_dR = cosine_der(k3,B)*dcosB_dR
                     # The minus sign in front of each pbf_dR element is due to F= -dU/dR
                     pbf_dR.append(-(cub_spl_dR*gk1*gk2*gk3 + dgk1_dR*cub_spl*gk2*gk3
                             + dgk2_dR*cub_spl*gk1*gk3 + dgk3_dR*cub_spl*gk1*gk2))
-    return pbf_dR
+                    pbf_di3.append(-np.cross(i3_unit,(dgk1_di3*cub_spl*gk2*gk3
+                            + dgk2_di3*cub_spl*gk1*gk3)))
+    return(pbf_dR,pbf_di3)
 
 def pbf_matrix(r_min,r_max,num_r_center,k_max,data):
     """

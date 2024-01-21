@@ -111,20 +111,22 @@ def right_handed_coord_system(e_x,e_y,e_z):
     return(e_x,e_y,e_z)
 
 
-def global_to_body_transform_matrix(e_x,e_y,e_z):
+def global_to_body_transform(R,e_x,e_y,e_z):
     """
-    Produce a transformation matrix from global to body frame, from principal axes\
-    of the body.
-    Parameters: 
-    e_x, e_y, e_z: column array vectors representing the principal axes of the body
+    Transformation between global and body frame for a set of 3 vectors 
+    that represent principal axes of a CG site. Body frame here is the
+    reference CG site
+    Parameters:
+    R: transformation matrix from global to body frame
+    e_x,e_y,e_z: column array vectors representing the principal axes of a CG site
     Returns:
-    R: transformation matrix
+    e_x,e_y,e_z: column array vectors representing the principal axes of a CG site
+    in the reference CG site body frame
     """
-    e_x,e_y,e_z = right_handed_coord_system(e_x,e_y,e_z)
-    
-    R = np.concatenate((np.transpose(e_x),np.transpose(e_y),
-                        np.transpose(e_z)),axis=0)
-    return R
+    e_x = np.dot(R,e_x)
+    e_y = np.dot(R,e_y)
+    e_z = np.dot(R,e_z)
+    return np.concatenate((e_x,e_y,e_z), axis=1)
     
 def global_to_body_frame(R,e_x,e_y,e_z):
     """

@@ -44,6 +44,7 @@ frame_block_size = 12 # number of frames per block to perform sequential triangu
 
 num_process = 12 # number of CPUs to run on (ideally equal or smaller than frame_block_size so all CPUs can be run at once)
 
+spheroid = "oblate" # choose molecular uniaxial shape, "oblate" or "prolate"
 ## Note about deciding the number of frames per block to perform sequential triangularization
 ------------
 

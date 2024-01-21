@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: afmcg
+Version: 1.0.1
+Summary: Anisotropic coarse-graining of atomistic dynamical simulations using force-matching
+Home-page: https://github.com/dmhuanglab/afmcg
+Download-URL: https://github.com/dmhuanglab/afmcg/archive/refs/tags/v1.0.1.tar.gz
+Author: Huong TL Nguyen
+Author-email: huong.nguyen@adelaide.edu.au
+License: CC-BY 4.0
+Keywords: coarse-grained,parametrization,force-matching
+Classifier: License :: OSI Approved
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+License-File: LICENSE.txt

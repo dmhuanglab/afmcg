@@ -1,0 +1,17 @@
+LICENSE.txt
+README.rst
+setup.cfg
+setup.py
+afmcg/__init__.py
+afmcg/coords_functions.py
+afmcg/helper_functions.py
+afmcg/matrix.py
+afmcg/orientation_functions.py
+afmcg/pbf.py
+afmcg/read_lammps_data.py
+afmcg/solver_SEQHT.py
+afmcg.egg-info/PKG-INFO
+afmcg.egg-info/SOURCES.txt
+afmcg.egg-info/dependency_links.txt
+afmcg.egg-info/requires.txt
+afmcg.egg-info/top_level.txt
